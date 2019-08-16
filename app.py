@@ -18,7 +18,14 @@ def home():
 
 @app.route('/tasks')
 def get_tasks():
-    return mongo.db.tasks.find()
+    result = mongo.db.tasks.find()
+    return result
+
+
+@app.route('/tasks', methods=['POST'])
+def insert_task():
+    body = request.form.to_dict()
+    return render_template("index.html", response=body)
 
 
 # @app.route('/add_task')

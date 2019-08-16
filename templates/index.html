@@ -13,5 +13,11 @@
         GET tasks
       </li>
     </ul>
+    {% if response %}
+    <br />
+    <pre>
+        {{ response }}
+    </pre>
+    {% endif %}
   </body>
 </html>
