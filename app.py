@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, redirect, request, url_for
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
+from bson import json_util
 
 app = Flask(__name__)
 
@@ -19,7 +20,7 @@ def home():
 @app.route('/tasks')
 def get_tasks():
     result = mongo.db.tasks.find()
-    return result
+    return json_util.dumps(result)
 
 
 @app.route('/tasks', methods=['POST'])
