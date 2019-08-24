@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, abort
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from bson import json_util
@@ -17,7 +17,7 @@ def home():
     return render_template("index.html")
 
 
-@app.route('/tasks')
+@app.route('/tasks', methods=['GET'])
 def get_tasks():
     result = mongo.db.tasks.find()
     return json_util.dumps(result)
@@ -25,8 +25,27 @@ def get_tasks():
 
 @app.route('/tasks', methods=['POST'])
 def insert_task():
-    body = request.form.to_dict()
-    return render_template("index.html", response=body)
+    try:
+        body = request.form.to_dict()
+        tasks = mongo.db.tasks
+
+        task_from_request = {
+            'title': request.form.get('title'),
+            'reference': request.form.get('reference'),
+            'description': request.form.get('description'),
+            'timeWorked': [],
+            'status': request.form.get('status'),
+            'visible': "visible" in request.form
+        }
+
+        result = tasks.insert_one(task_from_request)
+        return json_util.dumps(get_task_by_id(result.inserted_id))
+    except:
+        abort(400)
+
+
+def get_task_by_id(task_id):
+    return mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
 
 
 # @app.route('/add_task')
@@ -111,7 +130,7 @@ def insert_task():
 # Main
 if __name__ == "__main__":
     if(os.environ.get("WINDIR")):
-        app.run(host="localhost", port=8888, debug=True)
+        app.run(host="localhost", port=8080, debug=True)
     else:
         app.run(host=os.environ.get("IP"), port=int(
             os.environ.get("PORT")), debug=True)
