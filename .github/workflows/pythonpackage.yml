@@ -1,4 +1,8 @@
-name: Python package
+- name: Python package
+  env:
+    mongo_uri: ${{ secrets.MONGO_URI }}
+    port: ${{ secrets.PORT }}
+    ip: ${{ secrets.IP }}
 
 on: [push]
 
