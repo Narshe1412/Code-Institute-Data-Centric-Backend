@@ -1,8 +1,4 @@
-- name: Python package
-  env:
-    mongo_uri: ${{ secrets.MONGO_URI }}
-    port: ${{ secrets.PORT }}
-    ip: ${{ secrets.IP }}
+name: Python package
 
 on: [push]
 
@@ -33,6 +29,10 @@ jobs:
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
+      env:
+        mongo_uri: ${{ secrets.MONGO_URI }}
+        port: ${{ secrets.PORT }}
+        ip: ${{ secrets.IP }}
       run: |
         pip install pytest
         pytest
