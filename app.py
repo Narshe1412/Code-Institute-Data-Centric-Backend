@@ -36,6 +36,14 @@ def insert_task():
         body = request.form.to_dict()
         tasks = mongo.db.tasks
 
+        # Required fields
+        if "title" not in request.form:
+            raise ValueError("Required field is missing")
+        if "reference" not in request.form:
+            raise ValueError("Required field is missing")
+        if "status" not in request.form:
+            raise ValueError("Required field is missing")
+
         task_from_request = {
             'title': request.form.get('title'),
             'reference': request.form.get('reference'),

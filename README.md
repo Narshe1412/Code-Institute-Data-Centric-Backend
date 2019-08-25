@@ -1,5 +1,5 @@
 # Code-Institute-Data-Centric-Backend
 
-### Acknowledgements
+## Acknowledgements
 
-https://stackoverflow.com/a/52875875/5866637
+[Stackoverflow contribution from zhangqy](https://stackoverflow.com/a/45818284/5866637)
