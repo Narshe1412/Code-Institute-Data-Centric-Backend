@@ -30,9 +30,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       env:
-        mongo_uri: ${{ secrets.MONGO_URI }}
-        port: ${{ secrets.PORT }}
-        ip: ${{ secrets.IP }}
+        MONGO_URI: ${{ secrets.MONGO_URI }}
+        PORT: ${{ secrets.PORT }}
+        IP: ${{ secrets.IP }}
       run: |
         pip install pytest
         pytest
