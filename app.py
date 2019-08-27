@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, redirect, request, url_for, abort, make_response
+from flask import Flask, render_template, redirect, request, url_for, abort, make_response, jsonify
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from bson import json_util
@@ -30,35 +30,54 @@ def get_tasks():
     return json_util.dumps(result)
 
 
+@app.route('/tasks/<task_id>', methods=['GET'])
+def get_task_by_id(task_id):
+    result = mongo.db.tasks.find({"_id": ObjectId(task_id)})
+    return json_util.dumps(result)
+
+
+@app.route('/tasks/<task_id>', methods=['PUT'])
+def update_task_by_id(task_id):
+    try:
+        updated_task = get_task_from_request_form(request)
+        tasks = mongo.db.task
+
+        tasks.update(
+            {
+                "_id": ObjectId(task_id)
+            },
+            {
+                "title": updated_task['title'],
+                "reference": updated_task['reference'],
+                "description": updated_task['description'],
+                "status": updated_task['status'],
+                "visible": updated_task['visible']
+            })
+
+        return json_util.dumps(get_task_by_id(task_id))
+    except:
+        abort(400)
+
+
+@app.route('/tasks/<task_id>', methods=['DELETE'])
+def delete_task_by_id(task_id):
+    result = mongo.db.tasks.delete_one({"_id": ObjectId(task_id)})
+    return {"deleted_count": result.deleted_count}
+
+
 @app.route('/tasks', methods=['POST'])
 def insert_task():
     try:
         body = request.form.to_dict()
         tasks = mongo.db.tasks
 
-        # Required fields
-        if "title" not in request.form:
-            raise ValueError("Required field is missing")
-        if "reference" not in request.form:
-            raise ValueError("Required field is missing")
-        if "status" not in request.form:
-            raise ValueError("Required field is missing")
-
-        task_from_request = {
-            'title': request.form.get('title'),
-            'reference': request.form.get('reference'),
-            'description': request.form.get('description'),
-            'timeWorked': [],
-            'status': request.form.get('status'),
-            'visible': "visible" in request.form
-        }
-
-        result = tasks.insert_one(task_from_request)
+        result = tasks.insert_one(get_task_from_request_form(request))
         return json_util.dumps(get_task_by_id(result.inserted_id))
     except:
         abort(400)
 
 
+# Helper functions
 def get_task_by_id(task_id):
     return mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
 
@@ -140,6 +159,26 @@ def get_task_by_id(task_id):
 # @app.route('/add_category')
 # def add_category():
 #     return render_template('addCategory.html')
+
+def get_task_from_request_form(request):
+        # Required fields
+    if "title" not in request.form:
+        raise ValueError("Required field is missing")
+    if "reference" not in request.form:
+        raise ValueError("Required field is missing")
+    if "status" not in request.form:
+        raise ValueError("Required field is missing")
+
+    task_from_request = {
+        'title': request.form.get('title'),
+        'reference': request.form.get('reference'),
+        'description': request.form.get('description'),
+        'timeWorked': [],
+        'status': request.form.get('status'),
+        'visible': "visible" in request.form
+    }
+
+    return task_from_request
 
 
 # Main
