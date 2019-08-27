@@ -38,22 +38,25 @@ def get_task_by_id(task_id):
 
 @app.route('/tasks/<task_id>', methods=['PUT'])
 def update_task_by_id(task_id):
-    updated_task = get_task_from_request_form(request)
-    tasks = mongo.db.task
+    try:
+        updated_task = get_task_from_request_form(request)
+        tasks = mongo.db.task
 
-    tasks.update(
-        {
-            "_id": ObjectId(task_id)
-        },
-        {
-            "title": updated_task.title,
-            "reference": updated_task.reference,
-            "description": updated_task.description,
-            "status": updated_task.status,
-            "visible": updated_task.visible
-        })
+        tasks.update(
+            {
+                "_id": ObjectId(task_id)
+            },
+            {
+                "title": updated_task['title'],
+                "reference": updated_task['reference'],
+                "description": updated_task['description'],
+                "status": updated_task['status'],
+                "visible": updated_task['visible']
+            })
 
-    return json_util.dumps(get_task_by_id(task_id))
+        return json_util.dumps(get_task_by_id(task_id))
+    except:
+        abort(400)
 
 
 @app.route('/tasks/<task_id>', methods=['DELETE'])
