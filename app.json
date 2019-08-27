@@ -1,0 +1,31 @@
+{
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "description": "",
+  "env": {
+    "IP": {
+      "required": true
+    },
+    "MONGO_URI": {
+      "required": true
+    },
+    "PORT": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "name": "CI-Data-Centric-Backend",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
