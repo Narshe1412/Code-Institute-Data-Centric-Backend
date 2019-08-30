@@ -3,6 +3,7 @@ from flask import Flask, render_template, redirect, request, url_for, abort, mak
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 from bson import json_util
+import json
 
 app = Flask(__name__)
 
@@ -68,12 +69,10 @@ def delete_task_by_id(task_id):
 @app.route('/tasks', methods=['POST'])
 def insert_task():
     try:
-        body = request.form.to_dict()
-        tasks = mongo.db.tasks
-
-        result = tasks.insert_one(get_task_from_request_form(request))
+        task = get_task_from_request_form(request)
+        result = mongo.db.tasks.insert_one(task)
         return json_util.dumps(get_task_by_id(result.inserted_id))
-    except:
+    except Exception as err:
         abort(400)
 
 
@@ -161,21 +160,22 @@ def get_task_by_id(task_id):
 #     return render_template('addCategory.html')
 
 def get_task_from_request_form(request):
-        # Required fields
-    if "title" not in request.form:
+    json_data = request.get_json()
+    # Required fields
+    if "title" not in json_data:
         raise ValueError("Required field is missing")
-    if "reference" not in request.form:
+    if "reference" not in json_data:
         raise ValueError("Required field is missing")
-    if "status" not in request.form:
+    if "status" not in json_data:
         raise ValueError("Required field is missing")
 
     task_from_request = {
-        'title': request.form.get('title'),
-        'reference': request.form.get('reference'),
-        'description': request.form.get('description'),
+        'title': json_data['title'],
+        'reference': json_data['reference'],
+        'description': json_data['description'],
         'timeWorked': [],
-        'status': request.form.get('status'),
-        'visible': "visible" in request.form
+        'status': json_data['status'],
+        'visible': "visible" in json_data
     }
 
     return task_from_request

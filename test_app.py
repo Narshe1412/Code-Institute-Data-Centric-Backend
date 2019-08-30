@@ -47,8 +47,8 @@ class TestAPI(unittest.TestCase):
         should return status 200
         """
         response = self.client.post(
-            path="/tasks", data=self.mockTask, content_type="application/x-www-form-urlencoded")
-        response_data = json.loads(response.get_data())
+            path="/tasks", json=self.mockTask, content_type="application/json")
+        response_data = json.loads(response.get_data(as_text=True))
         response_data.pop("_id")
 
         self.assertEqual(response.status_code, 200)
@@ -59,7 +59,7 @@ class TestAPI(unittest.TestCase):
         should return status 400
         """
         response = self.client.post(
-            path="/tasks", data={"nothing": "here"}, content_type="application/x-www-form-urlencoded")
+            path="/tasks", json={"nothing": "here"}, content_type="application/json")
         self.assertEqual(response.status_code, 400)
 
     def test_Task_PUT_edit_an_existing_task(self):
@@ -68,14 +68,15 @@ class TestAPI(unittest.TestCase):
         should return an updated entry
         """
         # Create initial post and obtain its id
-        response = self.client.post(path='/tasks', data=self.mockTask,
-                                    content_type='application/x-www-form-urlencoded')
-        response_data = json.loads(response.get_data())
+        response = self.client.post(path='/tasks', json=self.mockTask,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
+
         # Execute request
         path = '/tasks/' + task_id
         response = self.client.put(
-            path, data=self.mockEditedTask, content_type='application/x-www-form-urlencoded')
+            path, json=self.mockEditedTask, content_type='json')
         self.assertEqual(response.status_code, 200)
 
     def test_Task_PUT_edit_an_existing_task(self):
@@ -83,14 +84,15 @@ class TestAPI(unittest.TestCase):
         should return status 400
         """
         # Create initial post and obtain its id
-        response = self.client.post(path='/tasks', data=self.mockTask,
-                                    content_type='application/x-www-form-urlencoded')
-        response_data = json.loads(response.get_data())
+        response = self.client.post(path='/tasks', json=self.mockTask,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
+
         # Execute request
         path = '/tasks/' + task_id
         response = self.client.put(
-            path, data={"nothing": "there"}, content_type='application/x-www-form-urlencoded')
+            path, json={"nothing": "there"}, content_type='application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_DELETE_an_existing_task(self):
@@ -99,10 +101,11 @@ class TestAPI(unittest.TestCase):
         should return a dictionary with the number of elements deleted = 1
         """
         # Create initial post and obtain its id
-        response = self.client.post(path='/tasks', data=self.mockTask,
-                                    content_type='application/x-www-form-urlencoded')
-        response_data = json.loads(response.get_data())
+        response = self.client.post(path='/tasks', json=self.mockTask,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
+
         # Execute request
         url = '/tasks/' + task_id
         response = self.client.delete(url)
