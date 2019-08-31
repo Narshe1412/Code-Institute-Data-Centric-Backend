@@ -15,6 +15,9 @@ mongo = PyMongo(app)
 
 @app.after_request
 def after_request(response):
+    """
+    Add CORS headers to each request
+    """
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     return response
@@ -22,23 +25,40 @@ def after_request(response):
 # Routes
 @app.route('/')
 def home():
+    """
+    Displays API definitions
+    """
     return render_template("index.html")
 
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
+    """
+    Obtains the full list of tasks on the system
+    """
     result = mongo.db.tasks.find()
     return json_util.dumps(result)
 
 
 @app.route('/tasks/<task_id>', methods=['GET'])
 def get_task_by_id(task_id):
+    """
+    Obtains a single task by its id
+    """
     result = mongo.db.tasks.find({"_id": ObjectId(task_id)})
     return json_util.dumps(result)
 
 
 @app.route('/tasks/<task_id>', methods=['PUT'])
 def update_task_by_id(task_id):
+    """
+    Updates a single task by ID
+
+    Returns
+    -------
+    Status code 400
+        if a required field is not provided, it will return 400 bad request code
+    """
     try:
         updated_task = get_task_from_request_form(request)
         tasks = mongo.db.task
@@ -62,12 +82,23 @@ def update_task_by_id(task_id):
 
 @app.route('/tasks/<task_id>', methods=['DELETE'])
 def delete_task_by_id(task_id):
+    """
+    Deletes a task from the system based on its id
+    """
     result = mongo.db.tasks.delete_one({"_id": ObjectId(task_id)})
     return {"deleted_count": result.deleted_count}
 
 
 @app.route('/tasks', methods=['POST'])
 def insert_task():
+    """
+    Inserts a single task into the system
+
+    Returns
+    -------
+    Status code 400
+        if a required field is not provided, it will return 400 bad request code
+    """
     try:
         task = get_task_from_request_form(request)
         result = mongo.db.tasks.insert_one(task)
@@ -76,90 +107,77 @@ def insert_task():
         abort(400)
 
 
+# Timer endpoints
+
+@app.route('/times/<task_id>', methods=['GET'])
+def get_times_by_task_id(task_id):
+    """
+    Obtains all the times by the id of its task
+    """
+    try:
+        result = mongo.db.tasks.aggregate([
+            {"$match": {"_id": ObjectId(task_id)}},
+            {"$replaceRoot": {"newRoot": {"timeWorkd": "$timeWorked"}}}
+        ])
+        return json_util.dumps(result)
+    except Exception as err:
+        print("error", err)
+        abort(400)
+
+
+@app.route('/times/<task_id>', methods=['POST'])
+def add_time_by_task_id(task_id):
+    """
+    Adds a new time object to the specified task id
+    """
+    try:
+        json_data = request.get_json()
+        time_from_request = {
+            "timestamp": json_data["timestamp"],
+            "duration": json_data["duration"]}
+        result = mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
+            '$push': {'timeWorked': time_from_request}})
+        return json_util.dumps({"added": result.modified_count})
+    except Exception as err:
+        abort(400)
+
+
+@app.route('/times/<task_id>', methods=['DELETE'])
+def delete_time_entry_by_task_id(task_id):
+    """
+    Delete a timer item that matches the id and the timestamp 
+    """
+    try:
+        json_data = request.get_json()
+        timestamp = json_data["timestamp"]
+        result = mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
+            '$pull': {'timeWorked': {"timestamp": timestamp}}})
+        return json_util.dumps({"removed": result.modified_count})
+    except Exception as err:
+        abort(400)
+
 # Helper functions
+
+
 def get_task_by_id(task_id):
     return mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
 
 
-# @app.route('/add_task')
-# def add_task():
-#     return render_template("addTask.html", categories=mongo.db.categories.find())
-
-
-# @app.route('/insert_task', methods=['POST'])
-# def insert_task():
-#     tasks = mongo.db.tasks
-#     tasks.insert_one(request.form.to_dict())
-#     return redirect(url_for('get_tasks'))
-
-
-# @app.route('/edit_task/<task_id>')
-# def edit_task(task_id):
-#     found_task = mongo.db.tasks.find_one({"_id": ObjectId(task_id)})
-#     all_categories = mongo.db.categories.find()
-#     return render_template("editTask.html", task=found_task, categories=all_categories)
-
-
-# @app.route('/update_task/<task_id>', methods=['POST'])
-# def update_task(task_id):
-#     tasks = mongo.db.tasks
-#     tasks.update(
-#         {
-#             "_id": ObjectId(task_id)
-#         },
-#         {
-#             "task_name": request.form.get('task_name'),
-#             "category_name": request.form.get('category_name'),
-#             "task_description": request.form.get('task_description'),
-#             "due_date": request.form.get('due_date'),
-#             "is_urgent": request.form.get('is_urgent')
-#         })
-#     return redirect(url_for('get_tasks'))
-
-
-# @app.route('/delete_task/<task_id>')
-# def delete_task(task_id):
-#     mongo.db.tasks.remove({"_id": ObjectId(task_id)})
-#     return redirect(url_for('get_tasks'))
-
-
-# @app.route('/get_categories')
-# def get_categories():
-#     return render_template('categories.html', categories=mongo.db.categories.find())
-
-
-# @app.route('/edit_category/<category_id>')
-# def edit_category(category_id):
-#     return render_template('editCategory.html',
-#                            category=mongo.db.categories.find_one({'_id': ObjectId(category_id)}))
-
-
-# @app.route('/update_category/<category_id>', methods=['POST'])
-# def update_category(category_id):
-#     mongo.db.categories.update(
-#         {'_id': ObjectId(category_id)},
-#         {'category_name': request.form.get('category_name')})
-#     return redirect(url_for('get_categories'))
-
-
-# @app.route('/delete_category/<category_id>')
-# def delete_category(category_id):
-#     mongo.db.categories.remove({'_id': ObjectId(category_id)})
-#     return redirect(url_for('get_categories'))
-
-
-# @app.route('/insert_category', methods=['POST'])
-# def insert_category():
-#     category_doc = {'category_name': request.form.get('category_name')}
-#     mongo.db.categories.insert_one(category_doc)
-#     return redirect(url_for('get_categories'))
-
-
-# @app.route('/add_category')
-# def add_category():
-#     return render_template('addCategory.html')
-
 def get_task_from_request_form(request):
+    """
+    Parses a request from the API endpoint attempting to extract the JSON information and transform
+    it on a python dict
+
+    Returns
+    -------
+    dict
+        a dictionary obtained from the provided json
+
+    Raises
+    ------
+    ValueError
+        If a required field is missing
+    """
     json_data = request.get_json()
     # Required fields
     if "title" not in json_data:

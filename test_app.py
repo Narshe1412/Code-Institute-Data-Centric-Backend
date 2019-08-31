@@ -77,7 +77,9 @@ class TestAPI(unittest.TestCase):
         path = '/tasks/' + task_id
         response = self.client.put(
             path, json=self.mockEditedTask, content_type='json')
+        updated_data = json.loads(response.get_data(as_text=True))
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(updated_data, self.mockEditedTask)
 
     def test_Task_PUT_edit_an_existing_task(self):
         """
