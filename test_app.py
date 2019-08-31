@@ -31,6 +31,18 @@ class TestAPI(unittest.TestCase):
             'status': 'edited status',
             'visible': True
         }
+        self.mockTaskWithTimes = {
+            'title': 'edited title',
+            'reference': 'edited ref',
+            'description': 'edited desc',
+            'timeWorked': [
+                {'timestamp': 12345, 'duration': 666},
+                {'timestamp': 67890, 'duration': 333},
+                {'timestamp': 112233, 'duration': 111}
+            ],
+            'status': 'edited status',
+            'visible': True
+        }
 
     def test_Tasks_GET_all_tasks(self):
         """
@@ -127,6 +139,76 @@ class TestAPI(unittest.TestCase):
         response_data = json.loads(response.get_data())
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response_data, {"deleted_count": 0})
+
+# Timer tests
+
+    def test_Timer_POST_new_time_to_task(self):
+        """
+        should return an array of active tasks
+        should return status 200
+        """
+        # Create initial post and obtain its id
+        response = self.client.post(path='/tasks', json=self.mockTaskWithTimes,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
+        task_id = response_data['_id']['$oid']
+
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+                                    content_type='application/json')
+
+        response_data = json.loads(response.get_data(as_text=True))
+
+        self.assertIs(type(json.loads(response.get_data())), dict)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response_data, {"added": 1})
+
+    def test_Timer_GET_all_times_from_task(self):
+        """
+        should return an object confirming the creation
+        should return status 200
+        """
+        # Create initial post and obtain its id
+        response = self.client.post(path='/tasks', json=self.mockTaskWithTimes,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
+        task_id = response_data['_id']['$oid']
+
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+                                    content_type='application/json')
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 67890, 'duration': 333},
+                                    content_type='application/json')
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 112233, 'duration': 111},
+                                    content_type='application/json')
+
+        response = self.client.get(path="/times/" + task_id)
+        response_data = json.loads(response.get_data())
+
+        self.assertIs(type(json.loads(response.get_data())), list)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(
+            response_data[0], {"timeWorked": self.mockTaskWithTimes['timeWorked']})
+
+    def test_Timer_DELETE_time_to_task_id(self):
+        """
+        should return an object confirming the deleton
+        should return status 200
+        """
+        # Create initial post and obtain its id
+        response = self.client.post(path='/tasks', json=self.mockTaskWithTimes,
+                                    content_type='application/json')
+        response_data = json.loads(response.get_data(as_text=True))
+        task_id = response_data['_id']['$oid']
+
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+                                    content_type='application/json')
+
+        response = self.client.delete(
+            '/times/' + task_id, json={'timestamp': 12345})
+        response_data = json.loads(response.get_data())
+
+        self.assertIs(type(json.loads(response.get_data())), dict)
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response_data, {"removed": 1})
 
 
 if __name__ == '__main__':

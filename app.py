@@ -117,7 +117,7 @@ def get_times_by_task_id(task_id):
     try:
         result = mongo.db.tasks.aggregate([
             {"$match": {"_id": ObjectId(task_id)}},
-            {"$replaceRoot": {"newRoot": {"timeWorkd": "$timeWorked"}}}
+            {"$replaceRoot": {"newRoot": {"timeWorked": "$timeWorked"}}}
         ])
         return json_util.dumps(result)
     except Exception as err:
