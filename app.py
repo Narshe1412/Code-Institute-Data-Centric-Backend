@@ -21,7 +21,7 @@ def after_request(response):
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Methods'] = "POST, PUT, GET, OPTIONS, DELETE"
-    header['Access-Control-Allow-Headers'] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
+    header['Access-Control-Allow-Headers'] = "Content-Type, content-type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
     return response
 
 # Routes
