@@ -134,7 +134,7 @@ def add_time_by_task_id(task_id):
         json_data = request.get_json()
         time_from_request = {
             "timestamp": json_data["timestamp"],
-            "duration": json_data["duration"]}
+            "amount": json_data["amount"]}
         result = mongo.db.tasks.update_one({"_id": ObjectId(task_id)}, {
             '$push': {'timeWorked': time_from_request}})
         return json_util.dumps({"added": result.modified_count})

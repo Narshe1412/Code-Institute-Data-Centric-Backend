@@ -36,9 +36,9 @@ class TestAPI(unittest.TestCase):
             'reference': 'edited ref',
             'description': 'edited desc',
             'timeWorked': [
-                {'timestamp': 12345, 'duration': 666},
-                {'timestamp': 67890, 'duration': 333},
-                {'timestamp': 112233, 'duration': 111}
+                {'timestamp': 12345, 'amount': 666},
+                {'timestamp': 67890, 'amount': 333},
+                {'timestamp': 112233, 'amount': 111}
             ],
             'status': 'edited status',
             'visible': True
@@ -153,7 +153,7 @@ class TestAPI(unittest.TestCase):
         response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
 
-        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'amount': 666},
                                     content_type='application/json')
 
         response_data = json.loads(response.get_data(as_text=True))
@@ -173,11 +173,11 @@ class TestAPI(unittest.TestCase):
         response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
 
-        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'amount': 666},
                                     content_type='application/json')
-        response = self.client.post(path='/times/' + task_id, json={'timestamp': 67890, 'duration': 333},
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 67890, 'amount': 333},
                                     content_type='application/json')
-        response = self.client.post(path='/times/' + task_id, json={'timestamp': 112233, 'duration': 111},
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 112233, 'amount': 111},
                                     content_type='application/json')
 
         response = self.client.get(path="/times/" + task_id)
@@ -199,7 +199,7 @@ class TestAPI(unittest.TestCase):
         response_data = json.loads(response.get_data(as_text=True))
         task_id = response_data['_id']['$oid']
 
-        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'duration': 666},
+        response = self.client.post(path='/times/' + task_id, json={'timestamp': 12345, 'amount': 666},
                                     content_type='application/json')
 
         response = self.client.delete(
