@@ -20,6 +20,8 @@ def after_request(response):
     """
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
+    header['Access-Control-Allow-Methods'] = "POST, PUT, GET, OPTIONS, DELETE"
+    header['Access-Control-Allow-Headers'] = "Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With"
     return response
 
 # Routes
@@ -61,20 +63,19 @@ def update_task_by_id(task_id):
     """
     try:
         updated_task = get_task_from_request_form(request)
-        tasks = mongo.db.task
+        tasks = mongo.db.tasks
 
-        tasks.update(
+        result = tasks.update_one(
+            {"_id": ObjectId(task_id)},
             {
-                "_id": ObjectId(task_id)
-            },
-            {
-                "title": updated_task['title'],
-                "reference": updated_task['reference'],
-                "description": updated_task['description'],
-                "status": updated_task['status'],
-                "visible": updated_task['visible']
+                "$set": {
+                    "title": updated_task['title'],
+                    "reference": updated_task['reference'],
+                    "description": updated_task['description'],
+                    "status": updated_task['status'],
+                    "visible": updated_task['visible']
+                }
             })
-
         return json_util.dumps(get_task_by_id(task_id))
     except:
         abort(400)
