@@ -1,23 +1,549 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>API Info</title>
-  </head>
-  <body>
-    <h1>Endpoints</h1>
-    <ul>
-      <li>
-        GET tasks
-      </li>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Code Institute Task Manager</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/monokai-sublime.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>
+        hljs.configure({
+            tabReplace: '    ',
+        });
+        hljs.initHighlightingOnLoad();
+    </script>
+    <style>body {
+    position: relative;
+}
+
+h1 {
+    margin-top: 5px;
+}
+
+h1, h2, h3, h4 {
+    color: #2b2b2b;
+}
+
+h2:after {
+    content: ' ';
+}
+
+h5 {
+    font-weight: bold;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    display: none;
+    position: absolute;
+    margin-left: 8px;
+}
+
+h1:hover a, h2:hover a, h3:hover a, h4:hover a, h5:hover a, h6:hover a {
+    color: #a5a5a5;
+    display: initial;
+}
+
+.nav.nav-tabs > li > a {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.tab-content {
+    padding-top: 8px;
+}
+
+.table {
+    margin-bottom: 8px;
+}
+
+pre {
+    border-radius: 0px;
+    border: none;
+}
+
+pre code {
+    margin: -9.5px;
+}
+
+.request {
+    margin-top: 12px;
+    margin-bottom: 24px;
+}
+
+.response-text-sample {
+    padding: 0px !important;
+}
+
+.response-text-sample pre {
+    margin-bottom: 0px;
+}
+
+
+#sidebar-wrapper {
+    z-index: 1000;
+    position: fixed;
+    left: 250px;
+    width: 250px;
+    height: 100%;
+    margin-left: -250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #2b2b2b;
+    padding-top: 20px;
+}
+
+#sidebar-wrapper ul {
+    width: 250px;
+}
+
+#sidebar-wrapper ul li {
+    margin-right: 10px;
+}
+
+#sidebar-wrapper ul li a:hover {
+    background: inherit;
+    text-decoration: none;
+}
+
+#sidebar-wrapper ul li a {
+    display: block;
+    color: #ECF0F1;
+    padding: 6px 15px;
+}
+
+#sidebar-wrapper ul li ul {
+    padding-left: 25px;
+}
+
+#sidebar-wrapper ul li ul li a {
+    padding: 1px 0px;
+}
+
+#sidebar-wrapper ul li a:hover,
+#sidebar-wrapper ul li a:focus {
+    color: #e0c46c;
+    border-right: solid 1px #e0c46c;
+}
+
+#sidebar-wrapper ul li.active > a {
+    color: #e0c46c;
+    border-right: solid 3px #e0c46c;
+}
+
+#sidebar-wrapper ul li:not(.active) ul {
+    display: none;
+}
+
+#page-content-wrapper {
+    width: 100%;
+    position: absolute;
+    padding: 15px 15px 15px 250px;
+}
+</style>
+</head>
+<body data-spy="scroll" data-target=".scrollspy">
+<div id="sidebar-wrapper">
+    <div class="scrollspy">
+    <ul id="main-menu" data-spy="affix" class="nav">
+        <li>
+            <a href="#doc-general-notes">General notes</a>
+        </li>
+        
+        <li>
+            <a href="#doc-api-detail">API detail</a>
+        </li>
+        
+        
+        
+        <li>
+            <a href="#folder-task-collection">Task Collection</a>
+            <ul>
+                
+                <li>
+                    <a href="#request-task-collection-read-all-tasks">READ all tasks</a>
+                </li>
+                
+                <li>
+                    <a href="#request-task-collection-insert-a-task">INSERT a task</a>
+                </li>
+                
+                <li>
+                    <a href="#request-task-collection-delete-a-task">DELETE a task</a>
+                </li>
+                
+                <li>
+                    <a href="#request-task-collection-read-one-task">READ one task</a>
+                </li>
+                
+                <li>
+                    <a href="#request-task-collection-update-one-task">UPDATE one task</a>
+                </li>
+                
+            </ul>
+        </li>
+        
+        
+        <li>
+            <a href="#folder-time-collection">Time Collection</a>
+            <ul>
+                
+                <li>
+                    <a href="#request-time-collection-get-time-from-a-single-task">GET time from a single task</a>
+                </li>
+                
+                <li>
+                    <a href="#request-time-collection-post-new-timer-to-task-by-id">POST new timer to task by id</a>
+                </li>
+                
+                <li>
+                    <a href="#request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id">DELETE a timer element from the array of times for a task id</a>
+                </li>
+                
+            </ul>
+        </li>
+        
     </ul>
-    {% if response %}
-    <br />
-    <pre>
-        {{ response }}
-    </pre>
-    {% endif %}
-  </body>
+</div>
+
+</div>
+<div id="page-content-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>Code Institute Task Manager</h1>
+
+                <h2 id="doc-general-notes">
+                    General notes
+                    <a href="#doc-general-notes"><i class="glyphicon glyphicon-link"></i></a>
+                </h2>
+
+                <p>Task manager API to abstract the connection and logic with the mongo database</p>
+
+
+                
+
+                <h2 id="doc-api-detail">
+                    API detail
+                    <a href="#doc-api-detail"><i class="glyphicon glyphicon-link"></i></a>
+                </h2>
+
+                
+
+
+                
+                
+                <div class="endpoints-group">
+                    <h3 id="folder-task-collection">
+                        Task Collection
+                        <a href="#folder-task-collection"><i class="glyphicon glyphicon-link"></i></a>
+                    </h3>
+
+                    <div></div>
+
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-task-collection-read-all-tasks">
+                            READ all tasks
+                            <a href="#request-task-collection-read-all-tasks"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Obtains a JSON with all the tasks on the system</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-task-collection-read-all-tasks-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-task-collection-read-all-tasks-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-task-collection-read-all-tasks-example-curl">
+                                    <pre><code class="hljs curl">curl -X GET "{{url}}/tasks"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-task-collection-read-all-tasks-example-http">
+                                    <pre><code class="hljs http">GET %7B%7Burl%7D%7D/tasks HTTP/1.1
+Host: </code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-task-collection-insert-a-task">
+                            INSERT a task
+                            <a href="#request-task-collection-insert-a-task"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Inserts a task on the system based on a JSON document provided and returns the result of this operation in JSON format</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-task-collection-insert-a-task-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-task-collection-insert-a-task-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-task-collection-insert-a-task-example-curl">
+                                    <pre><code class="hljs curl">curl -X POST -H "Content-Type: application/json" -d '        {"title": "test title",
+        "reference": "test ref",
+        "description": "test desc",
+        "timeWorked": [],
+        "status": "test status",
+        "visible": true }' "{{url}}/tasks"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-task-collection-insert-a-task-example-http">
+                                    <pre><code class="hljs http">POST %7B%7Burl%7D%7D/tasks HTTP/1.1
+Host: 
+Content-Type: application/json
+
+        {"title": "test title",
+        "reference": "test ref",
+        "description": "test desc",
+        "timeWorked": [],
+        "status": "test status",
+        "visible": true }</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-task-collection-delete-a-task">
+                            DELETE a task
+                            <a href="#request-task-collection-delete-a-task"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Deletes a task on the system using its ID passed by parameter</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-task-collection-delete-a-task-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-task-collection-delete-a-task-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-task-collection-delete-a-task-example-curl">
+                                    <pre><code class="hljs curl">curl -X DELETE "{{url}}/tasks/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-task-collection-delete-a-task-example-http">
+                                    <pre><code class="hljs http">DELETE %7B%7Burl%7D%7D/tasks/%7B%7Bid%7D%7D HTTP/1.1
+Host: </code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-task-collection-read-one-task">
+                            READ one task
+                            <a href="#request-task-collection-read-one-task"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Obtains the information of a single task by its id</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-task-collection-read-one-task-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-task-collection-read-one-task-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-task-collection-read-one-task-example-curl">
+                                    <pre><code class="hljs curl">curl -X GET "{{url}}/tasks/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-task-collection-read-one-task-example-http">
+                                    <pre><code class="hljs http">GET %7B%7Burl%7D%7D/tasks/%7B%7Bid%7D%7D HTTP/1.1
+Host: </code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-task-collection-update-one-task">
+                            UPDATE one task
+                            <a href="#request-task-collection-update-one-task"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Updates the information of a single task by its ID</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-task-collection-update-one-task-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-task-collection-update-one-task-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-task-collection-update-one-task-example-curl">
+                                    <pre><code class="hljs curl">curl -X PUT "{{url}}/tasks/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-task-collection-update-one-task-example-http">
+                                    <pre><code class="hljs http">PUT %7B%7Burl%7D%7D/tasks/%7B%7Bid%7D%7D HTTP/1.1
+Host: </code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+
+                </div>
+                
+                
+                <div class="endpoints-group">
+                    <h3 id="folder-time-collection">
+                        Time Collection
+                        <a href="#folder-time-collection"><i class="glyphicon glyphicon-link"></i></a>
+                    </h3>
+
+                    <div></div>
+
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-time-collection-get-time-from-a-single-task">
+                            GET time from a single task
+                            <a href="#request-time-collection-get-time-from-a-single-task"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Obtains the array of times for a specific task by its id</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-time-collection-get-time-from-a-single-task-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-time-collection-get-time-from-a-single-task-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-time-collection-get-time-from-a-single-task-example-curl">
+                                    <pre><code class="hljs curl">curl -X GET "{{url}}/times/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-time-collection-get-time-from-a-single-task-example-http">
+                                    <pre><code class="hljs http">GET %7B%7Burl%7D%7D/times/%7B%7Bid%7D%7D HTTP/1.1
+Host: </code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-time-collection-post-new-timer-to-task-by-id">
+                            POST new timer to task by id
+                            <a href="#request-time-collection-post-new-timer-to-task-by-id"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div></div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-time-collection-post-new-timer-to-task-by-id-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-time-collection-post-new-timer-to-task-by-id-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-time-collection-post-new-timer-to-task-by-id-example-curl">
+                                    <pre><code class="hljs curl">curl -X POST -H "Content-Type: application/json" -d '{"timestamp": "Sat Aug 31 2019 08:36:35 GMT+0100", "duration": 666}' "{{url}}/times/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-time-collection-post-new-timer-to-task-by-id-example-http">
+                                    <pre><code class="hljs http">POST %7B%7Burl%7D%7D/times/%7B%7Bid%7D%7D HTTP/1.1
+Host: 
+Content-Type: application/json
+
+{"timestamp": "Sat Aug 31 2019 08:36:35 GMT+0100", "duration": 666}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+                    
+                    <div class="request">
+
+                        <h4 id="request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id">
+                            DELETE a timer element from the array of times for a task id
+                            <a href="#request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id"><i class="glyphicon glyphicon-link"></i></a>
+                        </h4>
+
+                        <div><p>Deletes an entry to the time table for a single document specified by id</p>
+</div>
+
+                        <div>
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id-example-curl" data-toggle="tab">Curl</a></li>
+                                <li role="presentation"><a href="#request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id-example-http" data-toggle="tab">HTTP</a></li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id-example-curl">
+                                    <pre><code class="hljs curl">curl -X DELETE -H "Content-Type: application/json" -d '{"timestamp": "Sat Aug 31 2019 08:36:35 GMT+0100"}' "{{url}}/times/{{id}}"</code></pre>
+                                </div>
+                                <div class="tab-pane" id="request-time-collection-delete-a-timer-element-from-the-array-of-times-for-a-task-id-example-http">
+                                    <pre><code class="hljs http">DELETE %7B%7Burl%7D%7D/times/%7B%7Bid%7D%7D HTTP/1.1
+Host: 
+Content-Type: application/json
+
+{"timestamp": "Sat Aug 31 2019 08:36:35 GMT+0100"}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <hr>
+                    </div>
+                    
+
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $("table:not(.table)").addClass('table table-bordered');
+    });
+</script>
+</body>
 </html>

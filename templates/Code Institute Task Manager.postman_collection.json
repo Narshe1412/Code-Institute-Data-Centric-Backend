@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "244ad430-7fa4-45fa-bc44-c9890d8ec116",
+		"name": "Code Institute Task Manager",
+		"description": "Task manager API to abstract the connection and logic with the mongo database",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Task Collection",
+			"item": [
+				{
+					"name": "READ all tasks",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						},
+						"description": "Obtains a JSON with all the tasks on the system"
+					},
+					"response": []
+				},
+				{
+					"name": "INSERT a task",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "        {\"title\": \"test title\",\r\n        \"reference\": \"test ref\",\r\n        \"description\": \"test desc\",\r\n        \"timeWorked\": [],\r\n        \"status\": \"test status\",\r\n        \"visible\": true }"
+						},
+						"url": {
+							"raw": "{{url}}/tasks",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks"
+							]
+						},
+						"description": "Inserts a task on the system based on a JSON document provided and returns the result of this operation in JSON format"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE a task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tasks/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{id}}"
+							]
+						},
+						"description": "Deletes a task on the system using its ID passed by parameter"
+					},
+					"response": []
+				},
+				{
+					"name": "READ one task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tasks/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{id}}"
+							]
+						},
+						"description": "Obtains the information of a single task by its id"
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE one task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/tasks/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tasks",
+								"{{id}}"
+							]
+						},
+						"description": "Updates the information of a single task by its ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Time Collection",
+			"item": [
+				{
+					"name": "GET time from a single task",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/times/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"times",
+								"{{id}}"
+							]
+						},
+						"description": "Obtains the array of times for a specific task by its id"
+					},
+					"response": []
+				},
+				{
+					"name": "POST new timer to task by id",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"timestamp\": \"Sat Aug 31 2019 08:36:35 GMT+0100\", \"duration\": 666}"
+						},
+						"url": {
+							"raw": "{{url}}/times/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"times",
+								"{{id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE a timer element from the array of times for a task id",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"timestamp\": \"Sat Aug 31 2019 08:36:35 GMT+0100\"}"
+						},
+						"url": {
+							"raw": "{{url}}/times/{{id}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"times",
+								"{{id}}"
+							]
+						},
+						"description": "Deletes an entry to the time table for a single document specified by id"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
